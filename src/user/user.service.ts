@@ -26,6 +26,14 @@ export class UserService {
     if (userIndex === -1) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     } else {
+      if (updateUserDto.username) {
+        const nameExist = this.users.findIndex(
+          (user) => user.username === updateUserDto.username,
+        );
+        if (nameExist !== -1) {
+          throw new HttpException('Name is exist', HttpStatus.CONFLICT);
+        }
+      }
       const updatedUser = { ...this.users[userIndex], ...updateUserDto };
       this.users[userIndex] = updatedUser;
       return updatedUser;
