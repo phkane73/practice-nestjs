@@ -13,7 +13,7 @@ export class CreateUserDto {
   role: string;
 
   @IsString({ each: true })
-  projects: [];
+  projects: string[] | string;
 
   @IsEnum(activeYn)
   @IsNotEmpty()

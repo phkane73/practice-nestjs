@@ -43,9 +43,21 @@ export class UserService {
   }
 
   search(searchUserDto: SearchUserDto): SearchUserDto[] {
+    if (typeof searchUserDto.projects === 'string') {
+      searchUserDto.projects = [searchUserDto.projects];
+    }
     return this.users.filter((user) => {
-      for (const property in searchUserDto) {
-        if (searchUserDto[property] !== user[property]) {
+      const { projects, ...searchWithNoProject } = searchUserDto;
+      for (const property in searchWithNoProject) {
+        if (searchWithNoProject[property] !== user[property]) {
+          return false;
+        }
+      }
+      if (
+        Array.isArray(projects) &&
+        projects.every((item) => typeof item === 'string')
+      ) {
+        if (!projects.every((item) => user.projects.includes(item))) {
           return false;
         }
       }
