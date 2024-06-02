@@ -1,4 +1,17 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { activeYn } from '../enums/user.enum';
 
-export class SearchUserDto extends PartialType(CreateUserDto) {}
+export class SearchUserDto {
+  @IsString()
+  @IsOptional()
+  searchKeyWord: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  projects: string[];
+
+  @IsEnum(activeYn)
+  @IsOptional()
+  activeYn: activeYn;
+}

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { SearchUserDto } from './dto/search-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UserService {
@@ -26,7 +26,7 @@ export class UserService {
     if (userIndex === -1) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     } else {
-      if (updateUserDto.username) {
+      if (username !== updateUserDto.username) {
         const nameExist = this.users.findIndex(
           (user) => user.username === updateUserDto.username,
         );
@@ -50,26 +50,32 @@ export class UserService {
     }
   }
 
-  search(searchUserDto: SearchUserDto): SearchUserDto[] {
-    if (typeof searchUserDto.projects === 'string') {
-      searchUserDto.projects = [searchUserDto.projects];
+  getAll(): CreateUserDto[] {
+    return this.users;
+  }
+
+  removeDiacritics(str: string) {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s/g, '');
+  }
+
+  search(searchUserDto: SearchUserDto): CreateUserDto[] {
+    const keyword: string = this.removeDiacritics(
+      searchUserDto.searchKeyWord.toLowerCase(),
+    );
+    if (keyword === 'all') {
+      return this.users;
     }
-    return this.users.filter((user) => {
-      const { projects, ...searchWithNoProject } = searchUserDto;
-      for (const property in searchWithNoProject) {
-        if (searchWithNoProject[property] !== user[property]) {
-          return false;
-        }
-      }
-      if (
-        Array.isArray(projects) &&
-        projects.every((item) => typeof item === 'string')
-      ) {
-        if (!projects.every((item) => user.projects.includes(item))) {
-          return false;
-        }
-      }
-      return true;
-    });
+    return this.users.filter(
+      (user) =>
+        this.removeDiacritics(user.username).toLowerCase().includes(keyword) ||
+        this.removeDiacritics(user.fullname).toLowerCase().includes(keyword) ||
+        this.removeDiacritics(user.role).toLowerCase().includes(keyword) ||
+        user.projects.some((project) =>
+          this.removeDiacritics(project).toLowerCase().includes(keyword),
+        ),
+    );
   }
 }

@@ -12,6 +12,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.enableCors();
   await app.listen(PORT);
   console.log(`This app run in port ${PORT}`);
 }
