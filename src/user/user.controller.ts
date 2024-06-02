@@ -39,9 +39,4 @@ export class UserController {
   search(@Query() searchContent: SearchUserDto): CreateUserDto[] {
     return this.userService.search(searchContent);
   }
-
-  @Get('get-all')
-  getAll(): CreateUserDto[] {
-    return this.userService.getAll();
-  }
 }
