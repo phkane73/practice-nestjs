@@ -58,20 +58,41 @@ export class UserService {
   }
 
   search(searchUserDto: SearchUserDto): CreateUserDto[] {
-    const keyword: string = this.removeDiacritics(
-      searchUserDto.searchKeyWord.toLowerCase(),
-    );
-    if (keyword === 'all') {
-      return this.users;
-    }
-    return this.users.filter(
-      (user) =>
-        this.removeDiacritics(user.username).toLowerCase().includes(keyword) ||
-        this.removeDiacritics(user.fullname).toLowerCase().includes(keyword) ||
-        this.removeDiacritics(user.role).toLowerCase().includes(keyword) ||
-        user.projects.some((project) =>
-          this.removeDiacritics(project).toLowerCase().includes(keyword),
-        ),
-    );
+    return this.users.filter((user) => {
+      if (searchUserDto.searchKeyWord !== '') {
+        const keyword: string = this.removeDiacritics(
+          searchUserDto.searchKeyWord,
+        ).toLowerCase();
+        if (
+          !(
+            this.removeDiacritics(user.username)
+              .toLowerCase()
+              .includes(keyword) ||
+            this.removeDiacritics(user.fullname)
+              .toLowerCase()
+              .includes(keyword) ||
+            user.projects.some((project) =>
+              this.removeDiacritics(project).toLowerCase().includes(keyword),
+            )
+          )
+        ) {
+          return false;
+        }
+      }
+      if (searchUserDto.role !== '') {
+        const role: string = this.removeDiacritics(
+          searchUserDto.role,
+        ).toLowerCase();
+        if (!this.removeDiacritics(user.role).toLowerCase().includes(role)) {
+          return false;
+        }
+      }
+      if (searchUserDto.activeYn) {
+        if (searchUserDto.activeYn !== user.activeYn) {
+          return false;
+        }
+      }
+      return true;
+    });
   }
 }
