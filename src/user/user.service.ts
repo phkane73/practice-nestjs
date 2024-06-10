@@ -63,20 +63,22 @@ export class UserService {
         const keyword: string = this.removeDiacritics(
           searchUserDto.searchKeyWord,
         ).toLowerCase();
-        if (
-          !(
-            this.removeDiacritics(user.username)
-              .toLowerCase()
-              .includes(keyword) ||
-            this.removeDiacritics(user.fullname)
-              .toLowerCase()
-              .includes(keyword) ||
-            user.projects.some((project) =>
-              this.removeDiacritics(project).toLowerCase().includes(keyword),
+        if (keyword) {
+          if (
+            !(
+              this.removeDiacritics(user.username)
+                .toLowerCase()
+                .includes(keyword) ||
+              this.removeDiacritics(user.fullname)
+                .toLowerCase()
+                .includes(keyword) ||
+              user.projects.some((project) =>
+                this.removeDiacritics(project).toLowerCase().includes(keyword),
+              )
             )
-          )
-        ) {
-          return false;
+          ) {
+            return false;
+          }
         }
       }
       if (searchUserDto.role !== '') {

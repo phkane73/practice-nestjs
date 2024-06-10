@@ -36,7 +36,7 @@ export class UserController {
   }
 
   @Get('search')
-  search(@Query() searchContent: SearchUserDto): CreateUserDto[] {
+  search(@Query() searchContent?: SearchUserDto): CreateUserDto[] {
     return this.userService.search(searchContent);
   }
 }
